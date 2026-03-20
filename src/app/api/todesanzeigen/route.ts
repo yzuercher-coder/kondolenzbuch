@@ -19,6 +19,10 @@ const schema = z.object({
   benachrichtigungEmail: z.string().optional(),
   portraitUrl: z.string().nullable().optional(),
   stimmungsbildUrl: z.string().nullable().optional(),
+  wohnort: z.string().optional(),
+  abschiedsfeierDatum: z.string().optional(),
+  abschiedsfeierOrt: z.string().optional(),
+  abschiedsfeierBemerkungen: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -30,7 +34,7 @@ export async function POST(req: NextRequest) {
     const parsed = schema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: "Ungültige Daten" }, { status: 400 });
 
-    const { geburtstag, sterbetag, kondolenzBis, benachrichtigungEmail, portraitUrl, stimmungsbildUrl, ...rest } = parsed.data;
+    const { geburtstag, sterbetag, kondolenzBis, benachrichtigungEmail, portraitUrl, stimmungsbildUrl, abschiedsfeierDatum, ...rest } = parsed.data;
 
     const anzeige = await prisma.todesanzeige.create({
       data: {
@@ -42,6 +46,7 @@ export async function POST(req: NextRequest) {
         benachrichtigungEmail: benachrichtigungEmail || null,
         portraitUrl: portraitUrl ?? null,
         stimmungsbildUrl: stimmungsbildUrl ?? null,
+        abschiedsfeierDatum: abschiedsfeierDatum ? new Date(abschiedsfeierDatum) : null,
         createdBy: session.user.id,
       },
     });

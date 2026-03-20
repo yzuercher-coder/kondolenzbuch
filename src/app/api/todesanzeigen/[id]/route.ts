@@ -18,6 +18,10 @@ const schema = z.object({
   benachrichtigungEmail: z.string().optional(),
   portraitUrl: z.string().nullable().optional(),
   stimmungsbildUrl: z.string().nullable().optional(),
+  wohnort: z.string().optional(),
+  abschiedsfeierDatum: z.string().optional(),
+  abschiedsfeierOrt: z.string().optional(),
+  abschiedsfeierBemerkungen: z.string().optional(),
 });
 
 interface Params {
@@ -35,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const parsed = schema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: "Ungültige Daten" }, { status: 400 });
 
-    const { geburtstag, sterbetag, kondolenzBis, benachrichtigungEmail, portraitUrl, stimmungsbildUrl, ...rest } = parsed.data;
+    const { geburtstag, sterbetag, kondolenzBis, benachrichtigungEmail, portraitUrl, stimmungsbildUrl, abschiedsfeierDatum, ...rest } = parsed.data;
 
     const anzeige = await prisma.todesanzeige.update({
       where: { id },
@@ -47,6 +51,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         ...(benachrichtigungEmail !== undefined && { benachrichtigungEmail: benachrichtigungEmail || null }),
         ...(portraitUrl !== undefined && { portraitUrl: portraitUrl || null }),
         ...(stimmungsbildUrl !== undefined && { stimmungsbildUrl: stimmungsbildUrl || null }),
+        ...(abschiedsfeierDatum !== undefined && { abschiedsfeierDatum: abschiedsfeierDatum ? new Date(abschiedsfeierDatum) : null }),
       },
     });
 

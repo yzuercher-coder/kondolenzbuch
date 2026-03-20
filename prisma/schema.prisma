@@ -36,6 +36,12 @@ model Todesanzeige {
   sterbetag   DateTime
   portraitUrl      String?
   stimmungsbildUrl String?
+  wohnort          String?
+
+  // Abschiedsfeier
+  abschiedsfeierDatum       DateTime?
+  abschiedsfeierOrt         String?
+  abschiedsfeierBemerkungen String?   @db.Text
 
   // Texte
   trauerspruch   String?   @db.Text

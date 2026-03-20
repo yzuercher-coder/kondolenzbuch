@@ -13,9 +13,13 @@ const schema = z.object({
   nachname: z.string().min(1, "Nachname erforderlich"),
   geburtstag: z.string().optional(),
   sterbetag: z.string().min(1, "Sterbetag erforderlich"),
+  wohnort: z.string().optional(),
   trauerspruch: z.string().optional(),
   nachruf: z.string().optional(),
   hinterbliebene: z.string().optional(),
+  abschiedsfeierDatum: z.string().optional(),
+  abschiedsfeierOrt: z.string().optional(),
+  abschiedsfeierBemerkungen: z.string().optional(),
   status: z.enum(["ENTWURF", "AKTIV", "ARCHIVIERT"]),
   kondolenzAktiv: z.boolean(),
   kondolenzBis: z.string().optional(),
@@ -33,9 +37,13 @@ interface Anzeige {
   sterbetag: Date;
   portraitUrl: string | null;
   stimmungsbildUrl: string | null;
+  wohnort: string | null;
   trauerspruch: string | null;
   nachruf: string | null;
   hinterbliebene: string | null;
+  abschiedsfeierDatum: Date | null;
+  abschiedsfeierOrt: string | null;
+  abschiedsfeierBemerkungen: string | null;
   status: string;
   kondolenzAktiv: boolean;
   kondolenzBis: Date | null;
@@ -52,21 +60,22 @@ function dateToInput(date: Date | null | undefined): string {
   return new Date(date).toISOString().split("T")[0];
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, hint, children }: { label: string; error?: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="label">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
       {children}
-      {error && <p className="field-error">{error}</p>}
+      {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+      {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>
   );
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="card overflow-hidden">
-      <div className="px-5 py-3 bg-neutral-20 border-b border-neutral-40">
-        <h3>{title}</h3>
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="px-5 py-3 bg-gray-50 border-b border-gray-100">
+        <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
       </div>
       <div className="p-5 space-y-4">{children}</div>
     </div>
@@ -91,9 +100,13 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
           nachname: anzeige.nachname,
           geburtstag: dateToInput(anzeige.geburtstag),
           sterbetag: dateToInput(anzeige.sterbetag),
+          wohnort: anzeige.wohnort ?? "",
           trauerspruch: anzeige.trauerspruch ?? "",
           nachruf: anzeige.nachruf ?? "",
           hinterbliebene: anzeige.hinterbliebene ?? "",
+          abschiedsfeierDatum: dateToInput(anzeige.abschiedsfeierDatum),
+          abschiedsfeierOrt: anzeige.abschiedsfeierOrt ?? "",
+          abschiedsfeierBemerkungen: anzeige.abschiedsfeierBemerkungen ?? "",
           status: anzeige.status as "ENTWURF" | "AKTIV" | "ARCHIVIERT",
           kondolenzAktiv: anzeige.kondolenzAktiv,
           kondolenzBis: dateToInput(anzeige.kondolenzBis),
@@ -110,7 +123,11 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
       const res = await fetch(url, {
         method: anzeige ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, portraitUrl: portraitUrl || null, stimmungsbildUrl: stimmungsbildUrl || null }),
+        body: JSON.stringify({
+          ...data,
+          portraitUrl: portraitUrl || null,
+          stimmungsbildUrl: stimmungsbildUrl || null,
+        }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -125,43 +142,77 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-2xl">
+
+      {/* 1. Verstorbene Person */}
       <Section title="Verstorbene Person">
-        <PortraitUpload currentUrl={portraitUrl} onUpload={setPortraitUrl} />
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Vorname *" error={errors.vorname?.message}>
-            <input {...register("vorname")} className="input" />
-          </Field>
-          <Field label="Nachname *" error={errors.nachname?.message}>
-            <input {...register("nachname")} className="input" />
-          </Field>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Geburtsdatum">
-            <input {...register("geburtstag")} type="date" className="input" />
-          </Field>
-          <Field label="Sterbedatum *" error={errors.sterbetag?.message}>
-            <input {...register("sterbetag")} type="date" className="input" />
-          </Field>
+        <div className="flex gap-5 items-start">
+          <PortraitUpload currentUrl={portraitUrl} onUpload={setPortraitUrl} />
+          <div className="flex-1 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Vorname *" error={errors.vorname?.message}>
+                <input {...register("vorname")} className="input" />
+              </Field>
+              <Field label="Nachname *" error={errors.nachname?.message}>
+                <input {...register("nachname")} className="input" />
+              </Field>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Geburtsdatum">
+                <input {...register("geburtstag")} type="date" className="input" />
+              </Field>
+              <Field label="Sterbedatum *" error={errors.sterbetag?.message}>
+                <input {...register("sterbetag")} type="date" className="input" />
+              </Field>
+            </div>
+            <Field label="Wohnort / Gemeinde" hint="Erscheint unter dem Namen auf der Kondolenzseite">
+              <input {...register("wohnort")} className="input" placeholder="z.B. Zürich" />
+            </Field>
+          </div>
         </div>
       </Section>
 
+      {/* 2. Stimmungsbild */}
       <Section title="Stimmungsbild">
-        <p className="text-sm text-gray-500 -mt-1">Grosses Bild das oben auf der Kondolenzseite erscheint (z.B. Landschaft, Blumen, Kerze).</p>
+        <p className="text-sm text-gray-500 -mt-1">
+          Grosses Hintergrundbild der Kondolenzseite. Name und Lebensdaten werden darüber eingeblendet — wie eine gedruckte Todesanzeige.
+        </p>
         <StimmungsbildUpload currentUrl={stimmungsbildUrl} onUpload={setStimmungsbildUrl} />
       </Section>
 
+      {/* 3. Texte */}
       <Section title="Texte">
-        <Field label="Trauerspruch">
-          <input {...register("trauerspruch")} className="input" placeholder="z.B. ein Zitat oder Bibelvers" />
+        <Field label="Trauerspruch / Bibelvers" hint="Wird im Bild-Overlay und auf der Kondolenzseite angezeigt">
+          <input {...register("trauerspruch")} className="input" placeholder="z.B. «Ich bin die Auferstehung und das Leben.»" />
         </Field>
         <Field label="Nachruf">
-          <textarea {...register("nachruf")} rows={6} className="input resize-none" />
+          <textarea {...register("nachruf")} rows={6} className="input resize-none" placeholder="Persönliche Worte zum Gedenken…" />
         </Field>
-        <Field label="Hinterbliebene">
-          <textarea {...register("hinterbliebene")} rows={3} className="input resize-none" placeholder="Namen der Hinterbliebenen" />
+        <Field label="In tiefer Trauer">
+          <textarea
+            {...register("hinterbliebene")}
+            rows={3}
+            className="input resize-none"
+            placeholder="Namen der Hinterbliebenen (eine Person pro Zeile)"
+          />
         </Field>
       </Section>
 
+      {/* 4. Abschiedsfeier */}
+      <Section title="Abschiedsfeier">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Datum der Abschiedsfeier">
+            <input {...register("abschiedsfeierDatum")} type="date" className="input" />
+          </Field>
+          <Field label="Ort der Abschiedsfeier">
+            <input {...register("abschiedsfeierOrt")} className="input" placeholder="z.B. Friedhof Sihlfeld, Zürich" />
+          </Field>
+        </div>
+        <Field label="Weitere Angaben" hint="z.B. Uhrzeit, Hinweise zur Beerdigung">
+          <textarea {...register("abschiedsfeierBemerkungen")} rows={3} className="input resize-none" placeholder="z.B. Beerdigung um 14:00 Uhr, im engsten Familienkreis" />
+        </Field>
+      </Section>
+
+      {/* 5. Einstellungen */}
       <Section title="Einstellungen">
         <Field label="Veröffentlichungsstatus">
           <select {...register("status")} className="input">
@@ -173,17 +224,17 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
 
         <div className="space-y-3 pt-1">
           <label className="flex items-center gap-3 cursor-pointer">
-            <input {...register("kondolenzAktiv")} type="checkbox" className="w-4 h-4 accent-brand-60" />
+            <input {...register("kondolenzAktiv")} type="checkbox" className="w-4 h-4 accent-indigo-600" />
             <div>
-              <p className="text-sm font-semibold text-neutral-110">Kondolenzbuch aktiv</p>
-              <p className="text-xs text-neutral-80">Besucher können Kondolenzen hinterlassen</p>
+              <p className="text-sm font-semibold text-gray-800">Kondolenzbuch aktiv</p>
+              <p className="text-xs text-gray-500">Besucher können Kondolenzen hinterlassen</p>
             </div>
           </label>
           <label className="flex items-center gap-3 cursor-pointer">
-            <input {...register("moderationAktiv")} type="checkbox" className="w-4 h-4 accent-brand-60" />
+            <input {...register("moderationAktiv")} type="checkbox" className="w-4 h-4 accent-indigo-600" />
             <div>
-              <p className="text-sm font-semibold text-neutral-110">Moderation aktiv</p>
-              <p className="text-xs text-neutral-80">Einträge werden vor Veröffentlichung geprüft</p>
+              <p className="text-sm font-semibold text-gray-800">Moderation aktiv</p>
+              <p className="text-xs text-gray-500">Einträge werden vor Veröffentlichung geprüft</p>
             </div>
           </label>
         </div>
@@ -192,19 +243,24 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
           <input {...register("kondolenzBis")} type="date" className="input" />
         </Field>
         <Field label="Benachrichtigungs-E-Mail" error={errors.benachrichtigungEmail?.message}>
-          <input {...register("benachrichtigungEmail")} type="email" className="input" placeholder="Bei neuen Kondolenzen benachrichtigen (optional)" />
+          <input
+            {...register("benachrichtigungEmail")}
+            type="email"
+            className="input"
+            placeholder="Bei neuen Kondolenzen benachrichtigen (optional)"
+          />
         </Field>
       </Section>
 
       {serverError && (
-        <div className="px-4 py-3 rounded bg-[#FDE7E9] text-sm text-[#A4262C]">
+        <div className="px-4 py-3 rounded-lg bg-red-50 text-sm text-red-700">
           {serverError}
         </div>
       )}
 
       <div className="flex gap-3 pt-1">
         <button type="submit" disabled={isSubmitting} className="btn-primary">
-          {isSubmitting ? "Wird gespeichert..." : anzeige ? "Änderungen speichern" : "Todesanzeige erstellen"}
+          {isSubmitting ? "Wird gespeichert…" : anzeige ? "Änderungen speichern" : "Todesanzeige erstellen"}
         </button>
         <button type="button" onClick={() => router.back()} className="btn-secondary">
           Abbrechen
