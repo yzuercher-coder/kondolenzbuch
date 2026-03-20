@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDatum } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
 
 export const revalidate = 60;
 
 export default async function AnzeigenListePage() {
-  // Auto-Archivierung: abgelaufene Todesanzeigen beim Seitenaufruf archivieren
   await prisma.todesanzeige.updateMany({
     where: { status: "AKTIV", kondolenzBis: { lt: new Date() } },
     data: { status: "ARCHIVIERT" },
@@ -18,10 +18,10 @@ export default async function AnzeigenListePage() {
 
   return (
     <div>
-      <h2 className="mb-5">Kondolenzbücher</h2>
+      <h2 className="mb-6 text-gray-900">Kondolenzbücher</h2>
 
       {anzeigen.length === 0 ? (
-        <div className="card p-10 text-center text-neutral-80">
+        <div className="card p-12 text-center text-gray-400">
           Keine Kondolenzbücher vorhanden.
         </div>
       ) : (
@@ -30,34 +30,34 @@ export default async function AnzeigenListePage() {
             <Link
               key={anzeige.id}
               href={`/anzeigen/${anzeige.slug}`}
-              className="card p-4 flex gap-4 items-center hover:shadow-f4 transition-shadow"
+              className="card p-5 flex gap-4 items-center hover:shadow-md hover:border-gray-200 transition-all"
             >
               {anzeige.portraitUrl ? (
                 <img
                   src={anzeige.portraitUrl}
                   alt={`${anzeige.vorname} ${anzeige.nachname}`}
-                  className="w-14 h-14 rounded-full object-cover flex-shrink-0 border border-neutral-40"
+                  className="w-14 h-14 rounded-full object-cover flex-shrink-0 border border-gray-100"
                 />
               ) : (
-                <div className="w-14 h-14 rounded-full bg-brand-10 border border-brand-30 flex-shrink-0 flex items-center justify-center text-brand-70 text-lg font-semibold">
+                <div className="w-14 h-14 rounded-full bg-indigo-50 border border-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-500 text-lg font-semibold">
                   {anzeige.vorname[0]}{anzeige.nachname[0]}
                 </div>
               )}
-              <div className="min-w-0">
-                <p className="font-semibold text-neutral-110 text-base">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-gray-900 text-[17px]">
                   {anzeige.vorname} {anzeige.nachname}
                 </p>
-                <p className="text-sm text-neutral-80 mt-0.5">
+                <p className="text-gray-500 mt-0.5">
                   {anzeige.geburtstag && `* ${formatDatum(anzeige.geburtstag)} · `}
                   † {formatDatum(anzeige.sterbetag)}
                 </p>
                 {anzeige.trauerspruch && (
-                  <p className="text-sm text-neutral-90 mt-1 italic line-clamp-1">
+                  <p className="text-gray-400 mt-1 italic line-clamp-1 text-[15px]">
                     {anzeige.trauerspruch}
                   </p>
                 )}
               </div>
-              <span className="ml-auto text-neutral-60 flex-shrink-0">›</span>
+              <ChevronRight className="w-5 h-5 text-gray-300 flex-shrink-0" />
             </Link>
           ))}
         </div>

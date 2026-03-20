@@ -40,8 +40,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['"Segoe UI"', "system-ui", "-apple-system", "sans-serif"],
-        serif: ['"Segoe UI"', "system-ui", "-apple-system", "sans-serif"],
+        sans: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
+        serif: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
       },
       borderRadius: {
         sm:  "2px",

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,17 +29,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-20">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-brand-60 rounded-xl flex items-center justify-center mb-4 shadow-f4">
-            <span className="text-white text-xl font-bold">K</span>
+          <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center mb-4 shadow-md">
+            <Heart className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-semibold text-neutral-110">Kondolenzbuch</h1>
-          <p className="text-sm text-neutral-80 mt-1">Anmelden bei der Administration</p>
+          <h1 className="text-2xl font-semibold text-gray-900">Kondolenzbuch</h1>
+          <p className="text-gray-500 mt-1">Anmelden bei der Administration</p>
         </div>
 
-        <div className="card p-6">
+        <div className="card p-7">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="label">E-Mail-Adresse</label>
@@ -66,7 +67,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="px-3 py-2 rounded bg-[#FDE7E9] text-sm text-[#A4262C]">
+              <div className="px-3.5 py-2.5 rounded-lg bg-red-50 text-sm text-red-600 border border-red-100">
                 {error}
               </div>
             )}
@@ -74,7 +75,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full justify-center py-[7px] mt-1"
+              className="btn-primary w-full justify-center py-2.5 mt-1"
             >
               {loading ? "Anmelden..." : "Anmelden"}
             </button>
