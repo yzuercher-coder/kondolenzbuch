@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+  }
+
+  body {
+    @apply bg-neutral-20 text-neutral-110;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1 { @apply text-2xl font-semibold text-neutral-110 tracking-tight; }
+  h2 { @apply text-xl font-semibold text-neutral-110 tracking-tight; }
+  h3 { @apply text-base font-semibold text-neutral-110; }
+}
+
+@layer components {
+
+  /* ── Buttons ─────────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center gap-1.5 px-3 py-[5px] rounded text-sm font-medium
+           transition-all duration-100 cursor-pointer select-none outline-none
+           focus-visible:ring-2 focus-visible:ring-brand-60 focus-visible:ring-offset-1;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-60 text-white border border-brand-60
+           hover:bg-brand-70 hover:border-brand-70
+           active:bg-brand-80;
+  }
+
+  .btn-secondary {
+    @apply btn bg-neutral-0 text-neutral-110 border border-neutral-50
+           hover:bg-neutral-20 hover:border-neutral-60
+           active:bg-neutral-30;
+  }
+
+  .btn-subtle {
+    @apply btn bg-transparent text-neutral-110 border border-transparent
+           hover:bg-neutral-30 active:bg-neutral-40;
+  }
+
+  .btn-danger {
+    @apply btn bg-[#C50F1F] text-white border border-[#C50F1F]
+           hover:bg-[#A4262C] hover:border-[#A4262C]
+           active:bg-[#751B1E];
+  }
+
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+
+  /* ── Inputs ──────────────────────────────────────────────────── */
+  .input {
+    @apply w-full px-2.5 py-[5px] text-sm text-neutral-110
+           bg-neutral-0 border border-neutral-50 rounded
+           outline-none transition-all duration-100
+           placeholder:text-neutral-70
+           hover:border-neutral-80
+           focus:border-brand-60 focus:shadow-[0_0_0_1px_#0078D4];
+  }
+
+  .label {
+    @apply block text-sm font-semibold text-neutral-110 mb-1;
+  }
+
+  .field-error {
+    @apply text-xs text-[#C50F1F] mt-1;
+  }
+
+  /* ── Cards ───────────────────────────────────────────────────── */
+  .card {
+    @apply bg-neutral-0 border border-neutral-40 rounded-lg shadow-f2;
+  }
+
+  /* ── Badges ──────────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold;
+  }
+  .badge-brand   { @apply badge bg-brand-10 text-brand-80; }
+  .badge-success { @apply badge bg-[#DFF6DD] text-[#107C10]; }
+  .badge-warning { @apply badge bg-[#FFF4CE] text-[#835B00]; }
+  .badge-danger  { @apply badge bg-[#FDE7E9] text-[#A4262C]; }
+  .badge-neutral { @apply badge bg-neutral-20 text-neutral-90; }
+
+  /* ── Nav link ─────────────────────────────────────────────────── */
+  .nav-link {
+    @apply px-3 py-1.5 rounded text-sm text-neutral-90 transition-colors duration-100
+           hover:bg-neutral-20 hover:text-neutral-110;
+  }
+  .nav-link-active {
+    @apply px-3 py-1.5 rounded text-sm font-semibold
+           bg-brand-10 text-brand-80 hover:bg-brand-20;
+  }
+}

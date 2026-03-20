@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Admin-Benutzer ───────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  todesanzeigen Todesanzeige[]
+}
+
+// ─── Todesanzeige ─────────────────────────────────────────────────────────────
+
+model Todesanzeige {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  status      String   @default("ENTWURF")
+
+  // Verstorbene Person
+  vorname     String
+  nachname    String
+  geburtstag  DateTime?
+  sterbetag   DateTime
+  portraitUrl String?
+
+  // Texte
+  trauerspruch   String?   @db.Text
+  nachruf        String?   @db.Text
+  hinterbliebene String?   @db.Text
+
+  // Konfiguration Kondolenzbuch
+  kondolenzAktiv        Boolean   @default(true)
+  kondolenzBis          DateTime?
+  moderationAktiv       Boolean   @default(true)
+  benachrichtigungEmail String?
+
+  // Einbettung
+  einbettungsToken String @unique @default(cuid())
+
+  // Metadaten
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  creator   User     @relation(fields: [createdBy], references: [id])
+
+  kondolenzEintraege KondolenzEintrag[]
+}
+
+// ─── Kondolenz-Eintrag ────────────────────────────────────────────────────────
+
+model KondolenzEintrag {
+  id             String       @id @default(cuid())
+  todesanzeigeId String
+  todesanzeige   Todesanzeige @relation(fields: [todesanzeigeId], references: [id], onDelete: Cascade)
+
+  // Absender
+  name      String
+  ort       String?
+  beziehung String?
+
+  // Inhalt
+  nachricht             String    @db.Text
+  bildUrl               String?
+  status                String    @default("AUSSTEHEND")
+  datenschutzZustimmung Boolean   @default(false)
+  gemeldet              Boolean   @default(false)
+  gemeldedAt            DateTime?
+
+  // Edit-Token für UC-012
+  editToken String?   @unique
+  editBis   DateTime?
+
+  // Metadaten
+  createdAt     DateTime  @default(now())
+  freigegebenAt DateTime?
+  ipAdresse     String?
+  email         String?
+}
