@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import PortraitUpload from "./PortraitUpload";
+import StimmungsbildUpload from "./StimmungsbildUpload";
 
 const schema = z.object({
   vorname: z.string().min(1, "Vorname erforderlich"),
@@ -31,6 +32,7 @@ interface Anzeige {
   geburtstag: Date | null;
   sterbetag: Date;
   portraitUrl: string | null;
+  stimmungsbildUrl: string | null;
   trauerspruch: string | null;
   nachruf: string | null;
   hinterbliebene: string | null;
@@ -75,6 +77,7 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [portraitUrl, setPortraitUrl] = useState<string>(anzeige?.portraitUrl ?? "");
+  const [stimmungsbildUrl, setStimmungsbildUrl] = useState<string>(anzeige?.stimmungsbildUrl ?? "");
 
   const {
     register,
@@ -107,7 +110,7 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
       const res = await fetch(url, {
         method: anzeige ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, portraitUrl: portraitUrl || null }),
+        body: JSON.stringify({ ...data, portraitUrl: portraitUrl || null, stimmungsbildUrl: stimmungsbildUrl || null }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -140,6 +143,11 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
             <input {...register("sterbetag")} type="date" className="input" />
           </Field>
         </div>
+      </Section>
+
+      <Section title="Stimmungsbild">
+        <p className="text-sm text-gray-500 -mt-1">Grosses Bild das oben auf der Kondolenzseite erscheint (z.B. Landschaft, Blumen, Kerze).</p>
+        <StimmungsbildUpload currentUrl={stimmungsbildUrl} onUpload={setStimmungsbildUrl} />
       </Section>
 
       <Section title="Texte">

@@ -37,6 +37,17 @@ export default async function AnzeigenDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Stimmungsbild */}
+      {anzeige.stimmungsbildUrl && (
+        <div className="w-full h-56 md:h-72 rounded-2xl overflow-hidden shadow-sm">
+          <img
+            src={anzeige.stimmungsbildUrl}
+            alt="Stimmungsbild"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
       {/* Todesanzeige */}
       <div className="card p-6 md:p-8">
         <div className="flex gap-6 items-start">
