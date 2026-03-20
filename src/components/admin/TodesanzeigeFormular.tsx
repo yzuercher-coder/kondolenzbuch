@@ -8,6 +8,7 @@ import { z } from "zod";
 import PortraitUpload from "./PortraitUpload";
 import StimmungsbildUpload from "./StimmungsbildUpload";
 import TodesanzeigeVorschau from "./TodesanzeigeVorschau";
+import KiAssistent from "./KiAssistent";
 import { useWatch } from "react-hook-form";
 
 const schema = z.object({
@@ -94,6 +95,7 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -185,6 +187,18 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
         </p>
         <StimmungsbildUpload currentUrl={stimmungsbildUrl} onUpload={setStimmungsbildUrl} />
       </Section>
+
+      {/* 2b. KI-Assistent */}
+      <KiAssistent
+        vorname={watched.vorname ?? ""}
+        nachname={watched.nachname ?? ""}
+        geburtstag={watched.geburtstag ?? ""}
+        sterbetag={watched.sterbetag ?? ""}
+        wohnort={watched.wohnort ?? ""}
+        onTrauerspruch={(t) => setValue("trauerspruch", t, { shouldDirty: true })}
+        onNachruf={(t) => setValue("nachruf", t, { shouldDirty: true })}
+        onStimmungsbild={(url) => setStimmungsbildUrl(url)}
+      />
 
       {/* 3. Texte */}
       <Section title="Texte">

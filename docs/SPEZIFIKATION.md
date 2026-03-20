@@ -73,6 +73,7 @@ Das Kondolieren im Trauerfall in klassischen Medien wie z. B. Zeitungen nimmt st
 | UC-013 | Kondolenz-Eintrag melden | Trauernde | ✅ |
 | UC-014 | Zustimmung zur Veröffentlichung | Trauernde | ✅ |
 | UC-015 | Bild zu Kondolenz hinzufügen | Trauernde | ✅ |
+| UC-016 | KI-gestützte Texte und Stimmungsbild generieren | Bestatter | ✅ |
 
 ---
 
@@ -211,6 +212,21 @@ Vor dem Absenden bestätigt die Person, dass ihr Name und Text öffentlich verö
 Die trauernde Person kann optional ein persönliches Bild (gemeinsame Erinnerung oder Symbolbild) zur Kondolenz hochladen. Vor dem Absenden wird das Bild zusammen mit dem Text zur Überprüfung angezeigt.
 
 **Implementierung:** `src/components/public/KondolenzFormular.tsx`, `src/app/api/kondolenzen/upload/route.ts`
+
+---
+
+### UC-016: KI-gestützte Texte und Stimmungsbild generieren
+**Akteur:** Bestatter | **Status:** ✅ Implementiert
+
+Der Bestatter kann im Erfassungsformular einer Todesanzeige mit einem Klick Trauerspruch, Nachruf und Stimmungsbild durch eine KI (Claude von Anthropic) generieren lassen. Er wählt einen Stil (Würdevoll, Religiös, Modern, Poetisch) und gibt optional persönliche Details zur verstorbenen Person ein. Die generierten Texte erscheinen per Typewriter-Effekt direkt in den Formularfeldern und können anschliessend manuell angepasst werden. Das Stimmungsbild wird als thematisch passende Naturaufnahme in der Live-Vorschau angezeigt und kann übernommen oder ersetzt werden. Ohne `ANTHROPIC_API_KEY` läuft die Funktion im Demo-Modus mit Beispieltexten.
+
+**Implementierung:**
+- `src/components/admin/KiAssistent.tsx` — UI-Komponente (Stil, Details, Buttons)
+- `src/app/api/ai/texte-generieren/route.ts` — Textgenerierung via Anthropic Claude
+- `src/app/api/ai/bild-generieren/route.ts` — Stimmungsbild-Vorschlag (kuratierte Naturfotos)
+- Eingebunden in `src/components/admin/TodesanzeigeFormular.tsx`
+
+**Konfiguration:** `ANTHROPIC_API_KEY` in Vercel-Umgebungsvariablen setzen. Empfohlenes Modell: `claude-haiku-4-5`.
 
 ---
 
