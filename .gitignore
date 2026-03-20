@@ -24,6 +24,14 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
+
+# local database
+prisma/dev.db
+prisma/dev.db-journal
+
+# claude settings
+.claude/settings.local.json
 
 # local uploads (Vercel Blob wird in Produktion verwendet)
 /public/uploads
