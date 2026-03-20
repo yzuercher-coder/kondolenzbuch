@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import PortraitUpload from "./PortraitUpload";
 import StimmungsbildUpload from "./StimmungsbildUpload";
+import TodesanzeigeVorschau from "./TodesanzeigeVorschau";
+import { useWatch } from "react-hook-form";
 
 const schema = z.object({
   vorname: z.string().min(1, "Vorname erforderlich"),
@@ -91,6 +93,7 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -115,6 +118,8 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
         }
       : { status: "ENTWURF", kondolenzAktiv: true, moderationAktiv: true },
   });
+
+  const watched = useWatch({ control });
 
   async function onSubmit(data: FormData) {
     setServerError(null);
@@ -141,7 +146,9 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-w-2xl">
+    <div className="flex gap-6 items-start">
+    {/* ── Linke Spalte: Formular ─────────────────────────────────── */}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 flex-1 min-w-0">
 
       {/* 1. Verstorbene Person */}
       <Section title="Verstorbene Person">
@@ -267,5 +274,27 @@ export default function TodesanzeigeFormular({ anzeige }: Props) {
         </button>
       </div>
     </form>
+
+    {/* ── Rechte Spalte: Live-Vorschau ───────────────────────────── */}
+    <div className="w-80 xl:w-96 flex-shrink-0 sticky top-6">
+      <TodesanzeigeVorschau
+        daten={{
+          vorname: watched.vorname ?? "",
+          nachname: watched.nachname ?? "",
+          geburtstag: watched.geburtstag ?? "",
+          sterbetag: watched.sterbetag ?? "",
+          wohnort: watched.wohnort ?? "",
+          trauerspruch: watched.trauerspruch ?? "",
+          nachruf: watched.nachruf ?? "",
+          hinterbliebene: watched.hinterbliebene ?? "",
+          abschiedsfeierDatum: watched.abschiedsfeierDatum ?? "",
+          abschiedsfeierOrt: watched.abschiedsfeierOrt ?? "",
+          abschiedsfeierBemerkungen: watched.abschiedsfeierBemerkungen ?? "",
+          portraitUrl: portraitUrl || undefined,
+          stimmungsbildUrl: stimmungsbildUrl || undefined,
+        }}
+      />
+    </div>
+    </div>
   );
 }
