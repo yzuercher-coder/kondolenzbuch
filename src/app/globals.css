@@ -96,4 +96,142 @@
     @apply px-3 py-1.5 rounded-lg text-sm font-semibold
            bg-indigo-50 text-indigo-700 hover:bg-indigo-100;
   }
+
+  /* ── Zeitungsinserat-Vorschau ─────────────────────────────────────
+     Massstabsgetreue Darstellung einer Schweizer Zeitungstodesanzeige.
+     Breite: 220px ≈ 58mm (2-spaltig NZZ/TA), Serifen-Schrift, S/W.
+  ─────────────────────────────────────────────────────────────────── */
+  .zeitungsinserat {
+    width: 220px;
+    border: 1.5px solid #000;
+    background: #fff;
+    color: #000;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 8.5px;
+    line-height: 1.4;
+  }
+
+  .zeitungsinserat-innen {
+    border: 0.5px solid #000;
+    margin: 4px;
+    padding: 10px 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .zi-kreuz {
+    font-size: 15px;
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: 0;
+  }
+
+  .zi-portrait-wrap {
+    margin-bottom: 7px;
+  }
+
+  .zi-portrait {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 0.5px solid #333;
+    display: block;
+  }
+
+  .zi-name-block {
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .zi-vorname {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+  }
+
+  .zi-nachname {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .zi-daten {
+    font-size: 8px;
+    letter-spacing: 0.03em;
+    text-align: center;
+    margin-bottom: 4px;
+    color: #222;
+  }
+
+  .zi-wohnort {
+    font-size: 8px;
+    text-align: center;
+    margin-bottom: 4px;
+    font-style: italic;
+    color: #333;
+  }
+
+  .zi-linie {
+    width: 100%;
+    border: none;
+    border-top: 0.5px solid #000;
+    margin: 6px 0;
+  }
+
+  .zi-trauerspruch {
+    font-size: 8px;
+    font-style: italic;
+    text-align: center;
+    line-height: 1.5;
+    padding: 0 4px;
+    color: #111;
+  }
+
+  .zi-nachruf {
+    font-size: 7.5px;
+    text-align: justify;
+    line-height: 1.45;
+    hyphens: auto;
+    color: #111;
+    width: 100%;
+  }
+
+  .zi-abschnitt-titel {
+    font-size: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: center;
+    margin-bottom: 3px;
+    color: #000;
+  }
+
+  .zi-hinterbliebene {
+    font-size: 7.5px;
+    text-align: center;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    color: #111;
+  }
+
+  .zi-abschied-zeile {
+    font-size: 8px;
+    text-align: center;
+    line-height: 1.5;
+    color: #111;
+  }
+
+  .zi-abschied-bem {
+    font-size: 7px;
+    text-align: center;
+    font-style: italic;
+    color: #333;
+    margin-top: 2px;
+  }
 }
