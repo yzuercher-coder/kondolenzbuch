@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { generateSlug } from "@/lib/utils";
-
 const Schema = z.object({
   name:    z.string().min(2),
   website: z.string().url().optional().or(z.literal("")),
@@ -33,7 +31,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
   const { name, website, logoUrl } = parsed.data;
-  const slug = generateSlug(`${name}-${Date.now()}`);
+  const slug = name.toLowerCase()
+    .replace(/[äöü]/g, (c) => ({ ä: "ae", ö: "oe", ü: "ue" }[c] ?? c))
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    + "-" + Date.now();
 
   const unternehmen = await prisma.unternehmen.create({
     data: { name, slug, website: website || null, logoUrl: logoUrl || null },
