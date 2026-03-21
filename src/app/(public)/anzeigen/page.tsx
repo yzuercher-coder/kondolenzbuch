@@ -5,28 +5,84 @@ import { ArrowRight } from "lucide-react";
 
 export const revalidate = 60;
 
-export default async function AnzeigenListePage() {
+interface Props {
+  searchParams: Promise<{ firma?: string }>;
+}
+
+export default async function AnzeigenListePage({ searchParams }: Props) {
+  const { firma } = await searchParams;
+
   // Abgelaufene Anzeigen automatisch archivieren
   await prisma.todesanzeige.updateMany({
     where: { status: "AKTIV", kondolenzBis: { lt: new Date() } },
     data: { status: "ARCHIVIERT" },
   });
 
-  const anzeigen = await prisma.todesanzeige.findMany({
-    where: { status: "AKTIV" },
-    orderBy: { sterbetag: "desc" },
-  });
+  // Unternehmen-Filter
+  const unternehmenFilter = firma
+    ? { unternehmen: { slug: firma } }
+    : {};
+
+  const [anzeigen, alleUnternehmen] = await Promise.all([
+    prisma.todesanzeige.findMany({
+      where: { status: "AKTIV", ...unternehmenFilter },
+      orderBy: { sterbetag: "desc" },
+      include: { unternehmen: { select: { name: true, slug: true } } },
+    }),
+    prisma.unternehmen.findMany({
+      where: { todesanzeigen: { some: { status: "AKTIV" } } },
+      orderBy: { name: "asc" },
+      select: { name: true, slug: true },
+    }),
+  ]);
+
+  const aktivesUnternehmen = firma
+    ? alleUnternehmen.find((u) => u.slug === firma)
+    : null;
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Kondolenzbücher</h1>
+        {aktivesUnternehmen && (
+          <p className="mt-1 text-indigo-600 font-medium">{aktivesUnternehmen.name}</p>
+        )}
         {anzeigen.length > 0 && (
           <p className="mt-1 text-gray-500">
             {anzeigen.length} {anzeigen.length === 1 ? "Eintrag" : "Einträge"}
           </p>
         )}
       </div>
+
+      {/* Unternehmens-Filter */}
+      {alleUnternehmen.length > 0 && (
+        <div className="flex gap-2 flex-wrap mb-6">
+          <Link
+            href="/anzeigen"
+            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              !firma
+                ? "bg-indigo-600 text-white"
+                : "bg-white border border-gray-200 text-gray-600 hover:border-indigo-300"
+            }`}
+          >
+            Alle
+          </Link>
+          {alleUnternehmen.map((u) => (
+            <Link
+              key={u.slug}
+              href={`/anzeigen?firma=${u.slug}`}
+              className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                firma === u.slug
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white border border-gray-200 text-gray-600 hover:border-indigo-300"
+              }`}
+            >
+              {u.name}
+            </Link>
+          ))}
+        </div>
+      )}
+
 
       {anzeigen.length === 0 ? (
         <div className="rounded-xl border border-gray-100 bg-white p-16 text-center text-gray-400">

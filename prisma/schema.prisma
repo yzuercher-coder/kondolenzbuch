@@ -8,6 +8,22 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ─── Unternehmen ──────────────────────────────────────────────────────────────
+
+model Unternehmen {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  website     String?
+  logoUrl     String?
+  widgetToken String   @unique @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  benutzer      User[]
+  todesanzeigen Todesanzeige[]
+}
+
 // ─── Admin-Benutzer ───────────────────────────────────────────────────────────
 
 model User {
@@ -18,6 +34,9 @@ model User {
   role      String   @default("ADMIN")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  unternehmenId String?
+  unternehmen   Unternehmen? @relation(fields: [unternehmenId], references: [id])
 
   todesanzeigen Todesanzeige[]
 }
@@ -54,8 +73,12 @@ model Todesanzeige {
   moderationAktiv       Boolean   @default(true)
   benachrichtigungEmail String?
 
-  // Einbettung
+  // Einbettung (einzelne Anzeige)
   einbettungsToken String @unique @default(cuid())
+
+  // Unternehmen
+  unternehmenId String?
+  unternehmen   Unternehmen? @relation(fields: [unternehmenId], references: [id])
 
   // Metadaten
   createdAt DateTime @default(now())

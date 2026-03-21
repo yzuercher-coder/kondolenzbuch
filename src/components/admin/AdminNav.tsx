@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   Heart,
+  Building2,
 } from "lucide-react";
 
 interface Props {
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/todesanzeigen", label: "Todesanzeigen",    icon: FileText },
   { href: "/kondolenzen",   label: "Kondolenzen",      icon: MessageSquare },
   { href: "/benutzer",      label: "Benutzer",         icon: Users },
+  { href: "/unternehmen",   label: "Unternehmen",      icon: Building2 },
 ];
 
 export default function AdminNav({ user }: Props) {
