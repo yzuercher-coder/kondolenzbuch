@@ -74,6 +74,13 @@ Das Kondolieren im Trauerfall in klassischen Medien wie z. B. Zeitungen nimmt st
 | UC-014 | Zustimmung zur Veröffentlichung | Trauernde | ✅ |
 | UC-015 | Bild zu Kondolenz hinzufügen | Trauernde | ✅ |
 | UC-016 | KI-gestützte Texte und Stimmungsbild generieren | Bestatter | ✅ |
+| UC-017 | Kondolier-Assistent für Besucher | Kondolierende | ✅ |
+| UC-018 | KI-gestützte Moderation | Administrator | ✅ |
+| UC-019 | Gedenkbuch-Abschluss als KI-PDF | Bestatter | ✅ |
+| UC-020 | Echte KI-Bildgenerierung für Stimmungsbilder | Bestatter | ⏳ (benötigt AI Gateway) |
+| UC-021 | Automatische Übersetzung von Kondolenzeinträgen | Kondolierende | ✅ |
+| UC-022 | Jährliche Gedenkbenachrichtigung | System | ✅ |
+| UC-023 | Stimmungsanalyse der Kondolenzen | Administrator | ✅ |
 
 ---
 
@@ -227,6 +234,67 @@ Der Bestatter kann im Erfassungsformular einer Todesanzeige mit einem Klick Trau
 - Eingebunden in `src/components/admin/TodesanzeigeFormular.tsx`
 
 **Konfiguration:** `ANTHROPIC_API_KEY` in Vercel-Umgebungsvariablen setzen. Empfohlenes Modell: `claude-haiku-4-5`.
+
+---
+
+### UC-017: Kondolier-Assistent für Besucher
+**Akteur:** Kondolierende | **Status:** ✅ Implementiert
+
+Ein Besucher der Kondolenzseite klickt auf «Hilfe beim Schreiben» im Kondolenzformular. Er wählt seine Beziehung zum Verstorbenen und gibt optional persönliche Erinnerungen ein. Die KI generiert einen persönlichen, würdevollen Kondolenztext der per Typewriter-Effekt ins Nachricht-Feld übernommen wird. Abgrenzung zu UC-016: UC-016 richtet sich an Bestatter im Admin, UC-017 an Besucher im öffentlichen Frontend.
+
+**Implementierung:** `src/components/public/KondolenzAssistent.tsx`, `src/app/api/ai/kondolenz-vorschlag/route.ts`, eingebunden in `KondolenzFormular.tsx`
+
+---
+
+### UC-018: KI-gestützte Moderation
+**Akteur:** Administrator | **Status:** ✅ Implementiert
+
+Nach Eingang eines neuen Kondolenz-Eintrags prüft die KI den Text automatisch im Hintergrund und speichert eine Empfehlung: FREIGEBEN, PRUEFEN oder ABLEHNEN — mit kurzer Begründung. In der Moderationstabelle erscheint die KI-Empfehlung farblich als Badge. Der Administrator entscheidet final.
+
+**Implementierung:** `src/app/api/ai/moderation-pruefen/route.ts` (intern aufgerufen aus `/api/kondolenzen`), Felder `kiEmpfehlung` + `kiBegruendung` in `KondolenzEintrag`, `ModerationsTabelle.tsx`
+
+---
+
+### UC-019: Gedenkbuch-Abschluss als KI-PDF
+**Akteur:** Bestatter | **Status:** ✅ Implementiert
+
+Nach Abschluss des Kondolenzbuches generiert der Bestatter ein «Gedenkbuch» als PDF. Die KI erstellt eine Zusammenfassung der häufigsten Themen und Eigenschaften aus den Kondolenzen. Das PDF enthält: KI-Zusammenfassung, alle freigegebenen Kondolenz-Einträge chronologisch. Abgrenzung zu UC-008: UC-008 ist ein Zeitungsinserat-PDF, UC-019 ist ein Gedenkbuch-PDF für die Familie.
+
+**Implementierung:** `src/lib/gedenkbuchPdf.tsx`, `src/app/api/todesanzeigen/[id]/gedenkbuch-pdf/route.ts`
+
+---
+
+### UC-020: Echte KI-Bildgenerierung für Stimmungsbilder
+**Akteur:** Bestatter | **Status:** ⏳ Geplant (benötigt Vercel AI Gateway)
+
+Stimmungsbilder werden durch eine Bildgenerierungs-KI erstellt (Gemini 3.1 Flash Image Preview via Vercel AI Gateway). Aktuell werden kuratierte Naturfotos verwendet (UC-016). Sobald AI Gateway konfiguriert ist, kann die bestehende Route `/api/ai/bild-generieren` entsprechend erweitert werden.
+
+---
+
+### UC-021: Automatische Übersetzung von Kondolenzeinträgen
+**Akteur:** Kondolierende | **Status:** ✅ Implementiert
+
+Die App erkennt automatisch nicht-deutsche Kondolenzeinträge und zeigt einen «Ins Deutsche übersetzen»-Button an. Die Übersetzung erscheint als aufklappbarer Bereich unter dem Originaltext. Das Original bleibt immer sichtbar.
+
+**Implementierung:** `src/components/public/UebersetzungButton.tsx`, `src/app/api/ai/uebersetzen/route.ts`
+
+---
+
+### UC-022: Jährliche Gedenkbenachrichtigung
+**Akteur:** System (automatisch) | **Status:** ✅ Implementiert
+
+Der bestehende Cron-Job (täglich 02:00 UTC) prüft zusätzlich ob heute der Jahrestag (Tag + Monat) des Sterbedatums einer aktiven oder archivierten Todesanzeige ist. Falls ja und eine Benachrichtigungs-E-Mail hinterlegt ist, wird eine persönliche Jahresgedenk-E-Mail versendet mit einem Auszug aus den bewegendsten Kondolenzeinträgen.
+
+**Implementierung:** `src/app/api/cron/archivieren/route.ts` (erweitert), `src/lib/email.ts` (neues Template `jahresgedenkMail`)
+
+---
+
+### UC-023: Stimmungsanalyse der Kondolenzen
+**Akteur:** Administrator | **Status:** ✅ Implementiert
+
+Im Admin kann der Bestatter per Klick eine KI-Stimmungsanalyse aller freigegebenen Kondolenzeinträge einer Todesanzeige abrufen. Die KI erstellt ein kurzes «Erinnerungsprofil»: häufigste Eigenschaften, Stimmung, und ein würdevoller Abschlusssatz. Angezeigt als Panel auf der Todesanzeigen-Detailseite.
+
+**Implementierung:** `src/app/api/ai/stimmungsanalyse/[id]/route.ts`, `src/components/admin/StimmungsanalysePanel.tsx`
 
 ---
 

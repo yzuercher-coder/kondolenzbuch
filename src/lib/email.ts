@@ -107,3 +107,34 @@ export function neueKondolenzMail(opts: {
     `,
   };
 }
+
+export function jahresgedenkMail(opts: {
+  verstorbenerName: string;
+  sterbejahr: number;
+  anzeigenUrl: string;
+  kondolenzAuszug: { name: string; text: string }[];
+}): { subject: string; html: string } {
+  const jahr = new Date().getFullYear();
+  const jahre = jahr - opts.sterbejahr;
+  const eintraege = opts.kondolenzAuszug
+    .map(e => `<div style="border-left:3px solid #6366f1;padding:8px 12px;margin:8px 0;background:#f5f3ff;"><strong>${e.name}</strong><br/><em>${e.text}</em></div>`)
+    .join("");
+
+  return {
+    subject: `Jahresgedenken — ${opts.verstorbenerName}`,
+    html: `
+      <div style="font-family:Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;">
+        <div style="background:#4F46E5;padding:24px;border-radius:8px 8px 0 0;">
+          <h1 style="color:white;margin:0;font-size:20px;">Jahresgedenken</h1>
+        </div>
+        <div style="background:#fff;padding:24px;border:1px solid #E5E7EB;border-top:none;border-radius:0 0 8px 8px;">
+          <p style="color:#374151;">Heute jährt sich der Todestag von <strong>${opts.verstorbenerName}</strong> zum ${jahre}. Mal.</p>
+          <p style="color:#374151;margin-top:12px;">Menschen aus dem Umfeld haben damals ihre Anteilnahme ausgedrückt:</p>
+          ${eintraege || '<p style="color:#9CA3AF;font-style:italic;">Keine Kondolenzeinträge vorhanden.</p>'}
+          <a href="${opts.anzeigenUrl}" style="display:inline-block;background:#4F46E5;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:16px;">
+            Kondolenzbuch öffnen
+          </a>
+        </div>
+      </div>`,
+  };
+}

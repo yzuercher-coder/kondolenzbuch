@@ -109,6 +109,10 @@ model KondolenzEintrag {
   gemeldet              Boolean   @default(false)
   gemeldedAt            DateTime?
 
+  // UC-018: KI-Moderation
+  kiEmpfehlung  String?
+  kiBegruendung String?
+
   // Edit-Token für UC-012
   editToken String?   @unique
   editBis   DateTime?

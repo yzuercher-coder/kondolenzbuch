@@ -10,6 +10,8 @@ interface Eintrag {
   beziehung: string | null;
   createdAt: Date;
   todesanzeige: { vorname: string; nachname: string };
+  kiEmpfehlung: string | null;
+  kiBegruendung: string | null;
 }
 
 export default function ModerationsTabelle({ eintraege }: { eintraege: Eintrag[] }) {
@@ -46,6 +48,9 @@ export default function ModerationsTabelle({ eintraege }: { eintraege: Eintrag[]
             Beziehung
           </th>
           <th className="px-5 py-2.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+            KI-Einschätzung
+          </th>
+          <th className="px-5 py-2.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
             Eingegangen
           </th>
           <th className="px-5 py-2.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
@@ -63,6 +68,28 @@ export default function ModerationsTabelle({ eintraege }: { eintraege: Eintrag[]
               </div>
             </td>
             <td className="px-5 py-3 text-gray-500 text-[13px]">{e.beziehung ?? "—"}</td>
+            <td className="px-5 py-3">
+              {e.kiEmpfehlung === "FREIGEBEN" && (
+                <span title={e.kiBegruendung ?? ""} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700">
+                  Freigeben
+                </span>
+              )}
+              {e.kiEmpfehlung === "PRUEFEN" && (
+                <span title={e.kiBegruendung ?? ""} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-50 text-yellow-700">
+                  Prüfen
+                </span>
+              )}
+              {e.kiEmpfehlung === "ABLEHNEN" && (
+                <span title={e.kiBegruendung ?? ""} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-600">
+                  Ablehnen
+                </span>
+              )}
+              {!e.kiEmpfehlung && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-50 text-gray-400">
+                  Prüft…
+                </span>
+              )}
+            </td>
             <td className="px-5 py-3 text-gray-400 text-xs">
               {new Date(e.createdAt).toLocaleString("de-CH", {
                 dateStyle: "short",

@@ -87,6 +87,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // UC-018: KI-Moderation asynchron starten (non-blocking)
+    fetch(`${baseUrl}/api/ai/moderation-pruefen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eintragId: eintrag.id, nachricht: data.nachricht, name: data.name }),
+    }).catch(console.error);
+
     return NextResponse.json({ id: eintrag.id }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Interner Fehler" }, { status: 500 });

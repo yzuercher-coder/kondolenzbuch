@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
+import KondolenzAssistent from "./KondolenzAssistent";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
@@ -21,9 +22,11 @@ type FormData = z.infer<typeof schema>;
 interface Props {
   todesanzeigeId: string;
   moderationAktiv: boolean;
+  verstorbenerVorname?: string;
+  verstorbenerNachname?: string;
 }
 
-export default function KondolenzFormular({ todesanzeigeId, moderationAktiv }: Props) {
+export default function KondolenzFormular({ todesanzeigeId, moderationAktiv, verstorbenerVorname, verstorbenerNachname }: Props) {
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [vorschau, setVorschau] = useState(false);
@@ -40,6 +43,7 @@ export default function KondolenzFormular({ todesanzeigeId, moderationAktiv }: P
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
@@ -177,6 +181,13 @@ export default function KondolenzFormular({ todesanzeigeId, moderationAktiv }: P
           placeholder="z.B. Freund, Arbeitskollege (optional)"
         />
       </div>
+
+      {/* UC-017: KI-Kondolier-Assistent */}
+      <KondolenzAssistent
+        vorname={verstorbenerVorname ?? ""}
+        nachname={verstorbenerNachname ?? ""}
+        onVorschlag={(text) => setValue("nachricht", text)}
+      />
 
       <div>
         <label className="label">Kondolenz *</label>

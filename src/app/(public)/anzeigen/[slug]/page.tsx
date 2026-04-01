@@ -5,6 +5,7 @@ import { formatDatum } from "@/lib/utils";
 import KondolenzFormular from "@/components/public/KondolenzFormular";
 import ShareButtons from "@/components/public/ShareButtons";
 import MeldenButton from "@/components/public/MeldenButton";
+import UebersetzungButton from "@/components/public/UebersetzungButton";
 
 export const revalidate = 30;
 
@@ -184,6 +185,7 @@ export default async function AnzeigenDetailPage({ params }: Props) {
                 <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-[15px]">
                   {eintrag.nachricht}
                 </p>
+                <UebersetzungButton text={eintrag.nachricht} />
                 {eintrag.bildUrl && (
                   <img
                     src={eintrag.bildUrl}
@@ -210,6 +212,8 @@ export default async function AnzeigenDetailPage({ params }: Props) {
             <KondolenzFormular
               todesanzeigeId={anzeige.id}
               moderationAktiv={anzeige.moderationAktiv}
+              verstorbenerVorname={anzeige.vorname}
+              verstorbenerNachname={anzeige.nachname}
             />
           </div>
         </div>
